@@ -4,11 +4,14 @@ const app = express();
 const cors = require('cors');
 const fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+// var url = "mongodb://localhost:27017/";
 var twilio = require('twilio');
 var accountSid = 'ACeb82062d50674c44e16249311a3408d6'; // Your Account SID from www.twilio.com/console
 var authToken = 'ba16bf1d03252f6c03e3a72d7837d204';   // Your Auth Token from www.twilio.com/console
-var client = new twilio(accountSid, authToken);
+var clientTwilio = new twilio(accountSid, authToken);
+
+const uri = "mongodb+srv://michaelabhi01:Abhi@12345@cluster0-sowc0.mongodb.net/test?retryWrites=true&w=majority";
+const client = new MongoClient(uri, { useNewUrlParser: true });
 
 const server = http.createServer(app);
 
@@ -41,14 +44,14 @@ app.use('/sendOtp', (req,res) => {
     var messageBody = req.body.message;
     var sendTo = req.body.contact;
     
-client.messages.create({
-    body: messageBody,
-    to: sendTo,  // Text this number
-    from: '+14013084134' // From a valid Twilio number
-})
-    .then(message => {
+// clientTwilio.messages.create({
+//     body: messageBody,
+//     to: sendTo,  // Text this number
+//     from: '+14013084134' // From a valid Twilio number
+// })
+//     .then(message => {
      
-         MongoClient.connect(url, function(err, db) {
+         client.connect(function(err, db) {
            if (err) throw err;
            var dbo = db.db("messages");
            dbo.collection("sentMessagesHistory").insert(req.body, function(err, res) {
@@ -59,12 +62,12 @@ client.messages.create({
       });
   });
   return "OTP sent successfully!";
-});
+// });
 });
 
 
 app.use('/sentMessages', (req,res)=>{
-    MongoClient.connect(url, function(err, db) {
+    client.connect(function(err, db) {
         if (err) throw err;
         var dbo = db.db("messages");
         dbo.collection("sentMessagesHistory").find({}).sort({"date" : -1}).toArray(function(err, result){
