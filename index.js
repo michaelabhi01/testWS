@@ -25,7 +25,9 @@ app.all("/*", function(req, res, next){
     next();
 });
 
-server.listen(5000, ()=> console.log("server started at port 5000"));
+// server.listen(5000, ()=> console.log("server started at port 5000"));
+const port = process.env.PORT || 5000;
+server.listen(port, () => console.log(`Listening on port ${port}.....`));
 
 app.use('/contacts',(req,res) => {
     const dataBuffer = fs.readFileSync('contacts-list.json');
