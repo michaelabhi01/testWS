@@ -40,6 +40,13 @@ app.use('/contacts',(req,res) => {
     res.status(200).send(contacts);
 });
 
+app.use('/jsonData',(req,res) => {
+    const dataBuffer = fs.readFileSync('file.json');
+    const dataJSON = dataBuffer.toString();
+    const data = JSON.parse(dataJSON);
+    res.status(200).send(data);
+});
+
 app.use('/sendOtp', (req,res) => {
     var messageBody = req.body.message;
     var sendTo = req.body.contact;
